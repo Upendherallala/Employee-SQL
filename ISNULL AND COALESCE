@@ -1,0 +1,11 @@
+----ISNULL and COALESCE 
+SELECT Title, CONCAT(FirstName,' ', MiddleName,' ', LastName) AS FullName, EmailPromotion FROM Person.Person
+
+SELECT ISNULL(Title, 'N/A') AS Title,
+CONCAT(FirstName,' ', MiddleName,' ', LastName) AS FullName, EmailPromotion FROM Person.Person 
+
+SELECT ISNULL(Title, 1) AS Title,
+CONCAT(FirstName,' ', MiddleName,' ', LastName) AS FullName, EmailPromotion FROM Person.Person 
+
+SELECT COALESCE(Title, 'N/A') AS Title,
+CONCAT(FirstName,' ', MiddleName,' ', LastName) AS FullName, EmailPromotion FROM Person.Person 
