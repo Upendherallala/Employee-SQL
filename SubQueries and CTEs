@@ -1,0 +1,54 @@
+-- 1. Retrieve all employees who work in the same department as Jane Smith.
+-- ==============================================================================
+-- We use a subquery to first find Jane's DepartmentID, then filter the main table.
+SELECT *
+FROM Employees
+WHERE DepartmentID IN (
+    SELECT DepartmentID
+    FROM Employees
+    WHERE FirstName = 'Jane' AND LastName = 'Smith'
+);
+
+-- ==============================================================================
+-- 2. Retrieve employees who have a higher salary than their department's average.
+-- ==============================================================================
+-- We use a "Correlated Subquery" here. For every employee evaluated in the outer 
+-- query (e), the inner query calculates the average for that specific department.
+SELECT e.EmployeeID, e.FirstName, e.LastName, e.DepartmentID, e.Salary
+FROM Employees e
+WHERE e.Salary > (
+    SELECT AVG(Salary)
+    FROM Employees
+    WHERE DepartmentID = e.DepartmentID
+);
+
+-- ==============================================================================
+-- 3. Retrieve employees in the department(s) with the highest average salary.
+-- ==============================================================================
+-- We use a CTE (WITH clause) to calculate the averages first to keep the code clean.
+WITH DepartmentAverages AS (
+    SELECT DepartmentID, AVG(Salary) AS AvgSalary
+    FROM Employees
+    GROUP BY DepartmentID
+)
+SELECT e.*
+FROM Employees e
+WHERE e.DepartmentID IN (
+    -- Find the DepartmentID(s) that match the absolute maximum average salary
+    SELECT DepartmentID
+    FROM DepartmentAverages
+    WHERE AvgSalary = (SELECT MAX(AvgSalary) FROM DepartmentAverages)
+);
+
+-- ==============================================================================
+-- 4. Retrieve employees in departments with more than two employees.
+-- ==============================================================================
+-- We use a subquery with a GROUP BY and HAVING clause to filter the departments.
+SELECT *
+FROM Employees
+WHERE DepartmentID IN (
+    SELECT DepartmentID
+    FROM Employees
+    GROUP BY DepartmentID
+    HAVING COUNT(EmployeeID) > 2
+);
